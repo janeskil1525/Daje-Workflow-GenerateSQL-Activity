@@ -1,7 +1,6 @@
 package Daje::Workflow::GenerateSQL::Activity;
 use Mojo::Base 'Daje::Workflow::Common::Activity::Base', -base, -signatures;
 
-
 # NAME
 # ====
 ##
@@ -41,16 +40,14 @@ use Mojo::Base 'Daje::Workflow::Common::Activity::Base', -base, -signatures;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
-our $VERSION = "0.03";
+our $VERSION = "0.05";
 
 # use Daje::Generate::Input::Sql::ConfigManager;
 
 use Daje::Workflow::GenerateSQL::Manager::Sql;
 # use Daje::Generate::Output::Sql::Table;
 use Daje::Tools::Datasections;
-use Config::Tiny;
-
-has 'config_manager';
+use Daje::Config;
 
 sub process ($self) {
 
@@ -75,38 +72,38 @@ sub _process_sql($self, $file) {
     $self->error->add_error($@) if defined $@;
 
 
-#     try {
-#         Daje::Generate::Output::Sql::SqlManager->new(
-#             config => $self->config,
-#             file   => $file,
-#             sql    => $sql,
-#         )->save_file();
-#     } catch ($e) {
-#         die "Could not create output '$e'";
-#     };
-#
+     # try {
+     #     Daje::Generate::Output::Sql::SqlManager->new(
+     #        config => $self->config,
+     #        file   => $file,
+     #         sql    => $sql,
+     #     )->save_file();
+     # } catch ($e) {
+     #     die "Could not create output '$e'";
+     # };
+
      return 1;
 }
 
 sub _load_table($self, $file) {
 
-    my $json = $self->config_manager->load_json($file);
-    my $template = $self->_load_templates();
+    my $json = Daje::Config->new()->load_json($file);
+    my $templates = $self->_load_templates();
     my $table;
 
-    # try {
-    #     $table = Daje::Workflow::GenerateSQL::Manager::Sql::SqlManager->new(
-    #         template => $template,
-    #         json     => $json,
-    #     );
-    # } catch ($e) {
-    #     die "process_sql failed '$e";
-    # };
-    #
-    # return $table;
+    eval {
+        $table = Daje::Workflow::GenerateSQL::Manager::Sql->new(
+            templates => $templates,
+            json     => $json,
+            error    => $self->error,
+        );
+    };
+    $self->error->add_error($@) if defined $@ and length($@) > 0;
+
+    return $table;
 }
 
-sub _load_templates($self, $source, $datasections) {
+sub _load_templates($self) {
     my $template;
     eval {
         $template = Daje::Tools::Datasections->new(
@@ -124,6 +121,7 @@ sub _load_templates($self, $source, $datasections) {
 
 1;
 __END__
+
 
 
 

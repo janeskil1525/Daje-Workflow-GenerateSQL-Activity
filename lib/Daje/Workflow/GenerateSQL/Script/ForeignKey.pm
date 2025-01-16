@@ -3,7 +3,6 @@ use Mojo::Base 'Daje::Workflow::GenerateSQL::Base::Common', -base, -signatures;
 
 
 has 'tablename'  => "";
-has 'templates';
 has 'created'  => 0;
 
 sub create_foreign_keys($self) {
@@ -42,6 +41,7 @@ sub get_templates($self, $key) {
 }
 
 1;
+
 
 
 
