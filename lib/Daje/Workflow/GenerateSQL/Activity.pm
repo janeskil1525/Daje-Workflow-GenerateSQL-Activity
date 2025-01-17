@@ -40,7 +40,7 @@ use Mojo::Base 'Daje::Workflow::Common::Activity::Base', -base, -signatures;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
-our $VERSION = "0.05";
+our $VERSION = "0.06";
 
 # use Daje::Generate::Input::Sql::ConfigManager;
 
@@ -110,9 +110,11 @@ sub _load_templates($self) {
             data_sections => $self->activity_data->{template}->{data_sections},
             source        => $self->activity_data->{template}->{source},
         );
-        $template->load_data_sections();
     };
     $self->error->add_error($@) if defined $@;
+
+    $template->load_data_sections();
+    $self->error->add_error($template->error());
 
     return $template;
 }
