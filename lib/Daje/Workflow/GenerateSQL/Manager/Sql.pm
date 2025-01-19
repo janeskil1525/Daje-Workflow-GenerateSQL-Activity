@@ -128,7 +128,7 @@ sub create_sql($self, $json, $tablename) {
 }
 
 sub fill_template($self, $name, $fields, $foreignkeys, $indexes, $sql) {
-    my $template = $self->template->get_data_section('table');
+    my $template = $self->templates->get_data_section('table');
     $template =~ s/<<fields>>/$fields/ig;
     $template =~ s/<<tablename>>/$name/ig;
     if(exists($foreignkeys->{template_fkey})) {

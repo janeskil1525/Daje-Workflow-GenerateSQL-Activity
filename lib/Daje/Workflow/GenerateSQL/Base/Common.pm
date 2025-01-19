@@ -16,6 +16,7 @@ sub shift_section ($self, $array) {
     }
     return $result;
 }
+
 sub set_sql($self, $sqlin) {
     $self->sql($sqlin);
 }

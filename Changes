@@ -2,5 +2,7 @@ Revision history for Perl extension Daje-Workflow-GenerateSQL-Activity
 
 {{$NEXT}}
 
+    - template bug fixed
+    - bug fix
     - original version
 
