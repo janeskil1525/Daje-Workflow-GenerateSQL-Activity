@@ -4,7 +4,7 @@ use Mojo::Base 'Daje::Workflow::Common::Activity::Base', -base, -signatures;
 # NAME
 # ====
 ##
-# Daje::Workflow::GenerateSQL::Activity - It's to generate SQL from a json description
+# Daje::Workflow::GenerateSQL::Activity - It's a to generate SQL from a json description
 #
 # SYNOPSIS
 # ========
@@ -13,7 +13,7 @@ use Mojo::Base 'Daje::Workflow::Common::Activity::Base', -base, -signatures;
 #
 #     my $object = $activity->{activity}->new(
 #             context       => $context,
-#             db            => $>db,
+#             db            => $db,
 #             error         => $error,
 #             model         => $model,
 #             activity_data => $activity_data,
@@ -46,6 +46,7 @@ use Mojo::File;
 use Daje::Workflow::GenerateSQL::Manager::Sql;
 use Daje::Tools::Datasections;
 use Daje::Config;
+use Daje::Workflow::Templates;
 
 sub process ($self) {
 
@@ -95,7 +96,12 @@ sub _process_sql($self, $file) {
 sub _load_table($self, $file) {
 
     my $json = Daje::Config->new()->load_json($file);
-    my $templates = $self->_load_templates();
+    my $templates = Daje::Workflow::Templates->new(
+        data_sections => $self->activity_data->{template}->{data_sections},
+        source        => $self->activity_data->{template}->{source},
+        error         => $self->error,
+    )->load_templates();
+
     my $table;
 
     eval {
@@ -109,24 +115,6 @@ sub _load_table($self, $file) {
 
     return $table;
 }
-
-sub _load_templates($self) {
-    my $template;
-    eval {
-        $template = Daje::Tools::Datasections->new(
-            data_sections => $self->activity_data->{template}->{data_sections},
-            source        => $self->activity_data->{template}->{source},
-        );
-    };
-    $self->error->add_error($@) if defined $@;
-
-    $template->load_data_sections();
-    $self->error->add_error($template->error());
-
-    return $template;
-}
-
-
 
 1;
 __END__
