@@ -69,8 +69,8 @@ sub _version($self, $version) {
                 my $table = $self->shift_section($tables);
                 $sql .= $self->create_table_sql($table);
             }
-
-        } elsif (exists(@{$version}[$i]->{views})) {
+        }
+        if (exists(@{$version}[$i]->{views})) {
             my $views = @{$version}[$i]->{views};
             my $len = scalar @{$views};
             for(my $j = 0; $j < $len; $j++){
